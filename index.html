@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>How to draw a circle on Google Maps</title>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=Your-Key"></script>
+
+
+    <script type="text/javascript">
+        var circleClusterremove = [];
+        var buffer_circle = null;
+
+        // To load google map
+        function initialize() {
+            var mapOptions = {
+                center: new google.maps.LatLng(19.110136, 72.881927),
+                zoom: 11,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+            map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+        }
+
+        // set onclick listener to pick a location on map
+        function setListenerBuffer() {
+            map.setOptions({ draggableCursor: 'crosshair' });
+            google.maps.event.addListenerOnce(map, "click", function (latlng) {
+                map.setOptions({ draggableCursor: '' });
+                createCircle(latlng.latLng);
+            });
+            return false;
+        }
+
+        // Draw circle with in radius
+        function createCircle(cntr) {
+            var rad = "5"; // can input dynamically
+            rad *= 1000; // convert to meters if in miles
+
+            if (buffer_circle != null) {
+                buffer_circle.setMap(null);
+            }
+
+            buffer_circle = new google.maps.Circle({
+                center: cntr,
+                radius: rad,
+                strokeColor: "",
+                strokeOpacity: 0.0,
+                strokeWeight: 2,
+                fillColor: "#FFD700",
+                fillOpacity: 0.5,
+                map: map
+            });
+            circleClusterremove.push(buffer_circle);
+        }
+
+        // To remove circle from google map
+        function RemoveCircleBuffer() {
+            try {
+                for (var i = 0; i < circleClusterremove.length; i++) {
+                    circleClusterremove[i].setMap(null);
+                }
+                circleClusterremove = [];
+            }
+            catch (Error) {
+            }
+        }
+    </script>
+
+    <style type="text/css">
+        .create_Circle {
+            background: url(buffer.png) no-repeat;
+            width: 41px;
+            margin: 0px 8px 0 0px;
+            float: left;
+            cursor: pointer;
+            z-index: 2;
+            height: 41px;
+        }
+
+        .remove_Circle {
+            background: url(close.png) no-repeat;
+            width: 41px;
+            margin: 0px 8px 0 0px;
+            float: left;
+            cursor: pointer;
+            z-index: 2;
+            height: 41px;
+        }
+    </style>
+</head>
+<body onload="initialize();">
+    <h1>Draw a Circle on Google Maps</h1>
+    <a href="#" onclick="return setListenerBuffer();">Click here to pick a location on map</a><br />
+    <a href="#" onclick="RemoveCircleBuffer();">Click here to remove circle from the map</a>
+
+    <div id="map-canvas" style="width: 750px; height: 400px">
+    </div>
+</body>
+</html>
